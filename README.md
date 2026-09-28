@@ -2,13 +2,13 @@
 
 > 分享我平时吃到的美食 · Sharing the food I've enjoyed
 
-![Status](https://img.shields.io/badge/status-idea_stage-ffd166)
+![Status](https://img.shields.io/badge/status-in_development-blue)
 
 ## 📌 项目状态 / Project Status
 
-💡 **想法阶段 (Idea stage)** — 目前还没有代码,只有想法和这份文档。
+🚧 **开发中 (In development)** — 第一版已实现「发布 + 浏览」,可以本地运行;评分、搜索等功能还在路上。
 
-There is no code yet — just an idea and this document.
+The first version with "post + browse" is done and runnable locally; rating, search and more are on the way.
 
 ## 💭 一句话介绍 / One-liner
 
@@ -26,9 +26,9 @@ There is no code yet — just an idea and this document.
 
 ### MVP(最小可用版本 / Minimum Viable Product)
 
-- 发布美食记录 / Post a food entry:照片、名称、餐厅、价格 (photos, name, restaurant, price)
-- 浏览时间线 / Browse entries:按时间查看所有记录 (view all entries by time)
-- 评分 / Rating:星级打分 (star rating)
+- ✅ 发布美食记录 / Post a food entry:照片、名称、餐厅、价格 (photos, name, restaurant, price)
+- ✅ 浏览时间线 / Browse entries:按时间查看所有记录 (view all entries by time)
+- ⏳ 评分 / Rating:星级打分 (star rating)
 
 ### 后续想法 / Later ideas
 
@@ -41,24 +41,39 @@ There is no code yet — just an idea and this document.
 ## 🗺️ 路线图 / Roadmap
 
 - [x] **Phase 0 · 想法 / Idea**:写下这份 README
-- [ ] **Phase 1 · MVP**:能够发布和浏览美食记录
+- [x] **Phase 1 · MVP**:能够发布和浏览美食记录
 - [ ] **Phase 2 · 体验 / Experience**:标签、搜索、评分
 - [ ] **Phase 3 · 扩展 / Expansion**:地图、随机推荐、分享
 
-## 🛠️ 技术选型(待定)/ Tech Stack (TBD)
+## 🛠️ 技术栈 / Tech Stack
 
-还在考虑中,倾向轻量、易维护的方案:
+第一版已确定:
 
-Still deciding — leaning toward something lightweight and easy to maintain:
+Decided for the first version:
 
-| 部分 / Part | 候选 / Candidates |
+| 部分 / Part | 选择 / Choice |
 | --- | --- |
-| 前端 / Frontend | React / Vue / Next.js |
-| 后端 / Backend | Node.js / Python / Serverless |
-| 数据库 / Database | SQLite / PostgreSQL |
-| 图片 / Images | 本地存储 / 对象存储 (OSS / S3) |
+| 框架 / Framework | Next.js 16(App Router)+ TypeScript |
+| 数据库 / Database | SQLite(better-sqlite3),数据文件在 `data/app.db` |
+| 图片 / Images | 本地存储于 `public/uploads/`(部署到 Vercel 等平台时需换成对象存储) |
 
-> 欢迎提出建议!Suggestions are welcome!
+> 图片本地存储仅适合开发环境;部署时图片需要放到持久化存储。
+> Local image storage works for development; on deploy, images need persistent storage.
+
+## 🚀 本地运行 / Getting Started
+
+**环境要求 / Requirements**:Node.js ≥ 20.9(推荐 22 LTS)
+
+```bash
+npm install
+npm run dev
+```
+
+打开 / Open:<http://localhost:3000>
+
+数据说明 / Data:`data/app.db`(数据库)和 `public/uploads/`(照片)都在 `.gitignore` 中,不会提交到仓库。
+
+The database file `data/app.db` and photos in `public/uploads/` are gitignored.
 
 ## 🤝 贡献 / Contributing
 
