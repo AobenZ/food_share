@@ -67,6 +67,9 @@ export default async function FoodDetailPage({ params }: Props) {
             {entry.address && <>📍 {entry.address}</>}
           </p>
         )}
+        {entry.description && (
+          <p className="detail-description">{entry.description}</p>
+        )}
       </div>
 
       {isAuthor && (
@@ -75,6 +78,7 @@ export default async function FoodDetailPage({ params }: Props) {
           rating={entry.rating}
           recommend={entry.recommend as RecommendLevel | null}
           address={entry.address}
+          description={entry.description}
           hidden={entry.hidden}
         />
       )}

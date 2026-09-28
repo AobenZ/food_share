@@ -4,19 +4,21 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import StarRatingInput from "./StarRatingInput";
 import RecommendSelector from "./RecommendSelector";
-import type { RecommendLevel } from "@/lib/constants";
+import { MAX_DESCRIPTION_LENGTH, type RecommendLevel } from "@/lib/constants";
 
 export default function EntryControls({
   id,
   rating: initialRating,
   recommend: initialRecommend,
   address: initialAddress,
+  description: initialDescription,
   hidden: initialHidden,
 }: {
   id: number;
   rating: number | null;
   recommend: RecommendLevel | null;
   address: string | null;
+  description: string | null;
   hidden: number;
 }) {
   const router = useRouter();
@@ -28,6 +30,13 @@ export default function EntryControls({
   const [hidden, setHidden] = useState<number>(initialHidden);
   const [editingAddress, setEditingAddress] = useState(false);
   const [draftAddress, setDraftAddress] = useState(initialAddress ?? "");
+  const [description, setDescription] = useState<string | null>(
+    initialDescription
+  );
+  const [editingDescription, setEditingDescription] = useState(false);
+  const [draftDescription, setDraftDescription] = useState(
+    initialDescription ?? ""
+  );
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
 
@@ -66,6 +75,14 @@ export default function EntryControls({
     if (await patch({ address: value })) {
       setAddress(value);
       setEditingAddress(false);
+    }
+  }
+
+  async function handleDescriptionSave() {
+    const value = draftDescription.trim() || null;
+    if (await patch({ description: value })) {
+      setDescription(value);
+      setEditingDescription(false);
     }
   }
 
@@ -145,6 +162,56 @@ export default function EntryControls({
               type="button"
               className="link-btn"
               onClick={() => setEditingAddress(true)}
+            >
+              编辑
+            </button>
+          </span>
+        )}
+      </div>
+
+      <div className="control-row">
+        <span className="control-label">描述</span>
+        {editingDescription ? (
+          <div className="description-edit">
+            <textarea
+              value={draftDescription}
+              onChange={(e) => setDraftDescription(e.target.value)}
+              placeholder="说说这道菜怎么样(可选)"
+              rows={4}
+              maxLength={MAX_DESCRIPTION_LENGTH}
+              autoFocus
+            />
+            <div className="description-edit-actions">
+              <button
+                type="button"
+                className="btn btn-small btn-primary"
+                onClick={handleDescriptionSave}
+              >
+                保存
+              </button>
+              <button
+                type="button"
+                className="btn btn-small btn-ghost"
+                onClick={() => {
+                  setEditingDescription(false);
+                  setDraftDescription(description ?? "");
+                }}
+              >
+                取消
+              </button>
+            </div>
+          </div>
+        ) : (
+          <span className="description-text">
+            {description ? (
+              <span className="description-value">{description}</span>
+            ) : (
+              <span className="muted">未填写</span>
+            )}
+            <button
+              type="button"
+              className="link-btn"
+              onClick={() => setEditingDescription(true)}
             >
               编辑
             </button>

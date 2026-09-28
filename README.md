@@ -26,7 +26,7 @@ Posting (multi-photo / rating / recommend level / address), browsing, detail pag
 
 ### MVP(最小可用版本 / Minimum Viable Product)
 
-- ✅ 发布美食记录 / Post a food entry:多图、名称、餐厅、价格、地址 (multi-photos, name, restaurant, price, address)
+- ✅ 发布美食记录 / Post a food entry:多图、名称、描述、餐厅、价格、地址 (multi-photos, name, description, restaurant, price, address)
 - ✅ 浏览时间线 / Browse entries:按时间查看所有记录 (view all entries by time)
 - ✅ 记录详情页 / Detail page:点击卡片查看大图与完整信息
 - ✅ 评分 / Rating:星级打分,发布后可修改

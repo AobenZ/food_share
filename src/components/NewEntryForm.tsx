@@ -5,7 +5,11 @@ import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import StarRatingInput from "@/components/StarRatingInput";
 import RecommendSelector from "@/components/RecommendSelector";
-import { MAX_PHOTOS, type RecommendLevel } from "@/lib/constants";
+import {
+  MAX_DESCRIPTION_LENGTH,
+  MAX_PHOTOS,
+  type RecommendLevel,
+} from "@/lib/constants";
 
 type PhotoItem = { file: File; preview: string };
 
@@ -15,6 +19,7 @@ export default function NewEntryForm() {
   const [restaurant, setRestaurant] = useState("");
   const [price, setPrice] = useState("");
   const [address, setAddress] = useState("");
+  const [description, setDescription] = useState("");
   const [rating, setRating] = useState<number | null>(null);
   const [recommend, setRecommend] = useState<RecommendLevel | null>(null);
   const [photos, setPhotos] = useState<PhotoItem[]>([]);
@@ -93,6 +98,7 @@ export default function NewEntryForm() {
           restaurant: restaurant.trim() || null,
           price: price === "" ? null : Number(price),
           address: address.trim() || null,
+          description: description.trim() || null,
           rating,
           recommend,
           photos: paths,
@@ -171,6 +177,16 @@ export default function NewEntryForm() {
           value={name}
           onChange={(e) => setName(e.target.value)}
           placeholder="比如:红烧肉"
+        />
+
+        <label htmlFor="description">描述</label>
+        <textarea
+          id="description"
+          value={description}
+          onChange={(e) => setDescription(e.target.value)}
+          placeholder="说说这道菜怎么样:味道、口感、分量、值得再来吗?(可选)"
+          rows={4}
+          maxLength={MAX_DESCRIPTION_LENGTH}
         />
 
         <label htmlFor="restaurant">餐厅</label>

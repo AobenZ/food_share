@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { deleteEntry, getEntryById, updateEntryPartial } from "@/lib/db";
 import { getSessionUser } from "@/lib/auth";
-import { RECOMMEND_LEVELS } from "@/lib/constants";
+import { MAX_DESCRIPTION_LENGTH, RECOMMEND_LEVELS } from "@/lib/constants";
 import { deleteUploadedFiles } from "@/lib/uploads";
 
 function parseId(raw: string): number | null {
@@ -43,7 +43,7 @@ export async function PATCH(
     return NextResponse.json({ error: "请求格式不正确" }, { status: 400 });
   }
 
-  const { rating, recommend, address, hidden } = (body ?? {}) as Record<
+  const { rating, recommend, address, description, hidden } = (body ?? {}) as Record<
     string,
     unknown
   >;
@@ -79,6 +79,22 @@ export async function PATCH(
   if (address !== undefined) {
     fields.address =
       typeof address === "string" && address.trim() ? address.trim() : null;
+  }
+
+  if (description !== undefined) {
+    if (
+      typeof description === "string" &&
+      description.trim().length > MAX_DESCRIPTION_LENGTH
+    ) {
+      return NextResponse.json(
+        { error: `描述不能超过 ${MAX_DESCRIPTION_LENGTH} 字` },
+        { status: 400 }
+      );
+    }
+    fields.description =
+      typeof description === "string" && description.trim()
+        ? description.trim()
+        : null;
   }
 
   if (hidden !== undefined) {

@@ -29,7 +29,7 @@ db.exec(`
 `);
 
 // 版本化迁移:每个版本独立事务、各自 bump user_version,幂等
-const SCHEMA_VERSION = 2;
+const SCHEMA_VERSION = 3;
 
 const migrations: Record<number, () => void> = {
   // v1:评分 / 推荐等级 / 地址 / 浏览量 / 隐藏 + photos 表,并回填旧封面
@@ -73,6 +73,10 @@ const migrations: Record<number, () => void> = {
       CREATE INDEX IF NOT EXISTS idx_entries_author ON entries(author_id);
     `);
   },
+  // v3:帖子描述(可选)
+  3: () => {
+    db.exec(`ALTER TABLE entries ADD COLUMN description TEXT;`);
+  },
 };
 
 function migrate() {
@@ -104,6 +108,7 @@ export type Entry = {
   rating: number | null;
   recommend: string | null;
   address: string | null;
+  description: string | null;
   views: number;
   hidden: number;
   created_at: string;
@@ -149,14 +154,15 @@ export function createEntry(data: {
   rating: number | null;
   recommend: string | null;
   address: string | null;
+  description: string | null;
   authorId: number;
 }): EntryWithPhotos {
   const entryId = db.transaction(() => {
     const cover = data.photos[0] ?? null;
     const info = db
       .prepare(
-        `INSERT INTO entries (name, restaurant, price, photo, rating, recommend, address, author_id)
-         VALUES (@name, @restaurant, @price, @photo, @rating, @recommend, @address, @authorId)`
+        `INSERT INTO entries (name, restaurant, price, photo, rating, recommend, address, description, author_id)
+         VALUES (@name, @restaurant, @price, @photo, @rating, @recommend, @address, @description, @authorId)`
       )
       .run({
         name: data.name,
@@ -166,6 +172,7 @@ export function createEntry(data: {
         rating: data.rating,
         recommend: data.recommend,
         address: data.address,
+        description: data.description,
         authorId: data.authorId,
       });
     const id = Number(info.lastInsertRowid);
@@ -179,7 +186,13 @@ export function createEntry(data: {
 }
 
 // 允许部分更新的字段白名单(拼 SET 子句时只取这里的列,防注入)
-const PATCHABLE = new Set(["rating", "recommend", "address", "hidden"]);
+const PATCHABLE = new Set([
+  "rating",
+  "recommend",
+  "address",
+  "description",
+  "hidden",
+]);
 
 export function updateEntryPartial(
   id: number,

@@ -1,7 +1,12 @@
 import { NextResponse } from "next/server";
 import { createEntry } from "@/lib/db";
 import { getSessionUser } from "@/lib/auth";
-import { MAX_PHOTOS, RECOMMEND_LEVELS, type RecommendLevel } from "@/lib/constants";
+import {
+  MAX_DESCRIPTION_LENGTH,
+  MAX_PHOTOS,
+  RECOMMEND_LEVELS,
+  type RecommendLevel,
+} from "@/lib/constants";
 
 export async function POST(request: Request) {
   const user = await getSessionUser();
@@ -16,7 +21,7 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "请求格式不正确" }, { status: 400 });
   }
 
-  const { name, restaurant, price, photos, rating, recommend, address } =
+  const { name, restaurant, price, photos, rating, recommend, address, description } =
     (body ?? {}) as Record<string, unknown>;
 
   const cleanName = typeof name === "string" ? name.trim() : "";
@@ -84,6 +89,21 @@ export async function POST(request: Request) {
   const cleanAddress =
     typeof address === "string" && address.trim() ? address.trim() : null;
 
+  // description:可选,超长报错而不是静默截断
+  if (
+    typeof description === "string" &&
+    description.trim().length > MAX_DESCRIPTION_LENGTH
+  ) {
+    return NextResponse.json(
+      { error: `描述不能超过 ${MAX_DESCRIPTION_LENGTH} 字` },
+      { status: 400 }
+    );
+  }
+  const cleanDescription =
+    typeof description === "string" && description.trim()
+      ? description.trim()
+      : null;
+
   const entry = createEntry({
     name: cleanName,
     restaurant: cleanRestaurant,
@@ -92,6 +112,7 @@ export async function POST(request: Request) {
     rating: cleanRating,
     recommend: cleanRecommend,
     address: cleanAddress,
+    description: cleanDescription,
     authorId: user.id,
   });
 
