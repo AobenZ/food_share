@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import Link from "next/link";
+import { getSessionUser } from "@/lib/auth";
+import LogoutButton from "@/components/LogoutButton";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -18,7 +20,9 @@ export const metadata: Metadata = {
   description: "记录和分享我平时吃到的美食",
 };
 
-export default function RootLayout({ children }: LayoutProps<"/">) {
+export default async function RootLayout({ children }: LayoutProps<"/">) {
+  const user = await getSessionUser();
+
   return (
     <html lang="zh-CN" className={`${geistSans.variable} ${geistMono.variable}`}>
       <body>
@@ -32,6 +36,17 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
             <Link className="nav-cta" href="/new">
               + 发布美食
             </Link>
+            {user ? (
+              <span className="nav-auth">
+                👤 {user.username}
+                <LogoutButton />
+              </span>
+            ) : (
+              <>
+                <Link href="/login">登录</Link>
+                <Link href="/register">注册</Link>
+              </>
+            )}
           </nav>
         </header>
         <main>{children}</main>

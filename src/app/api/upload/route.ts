@@ -2,6 +2,8 @@ import { NextResponse } from "next/server";
 import fs from "node:fs";
 import path from "node:path";
 import crypto from "node:crypto";
+import { getSessionUser } from "@/lib/auth";
+import { UPLOADS_DIR } from "@/lib/uploads";
 
 const MAX_SIZE = 5 * 1024 * 1024; // 5MB
 
@@ -13,6 +15,12 @@ const EXT_BY_TYPE: Record<string, string> = {
 };
 
 export async function POST(request: Request) {
+  // 上传只为发布服务,未登录直接拦截(也避免产生孤儿文件)
+  const user = await getSessionUser();
+  if (!user) {
+    return NextResponse.json({ error: "请先登录" }, { status: 401 });
+  }
+
   let formData: FormData;
   try {
     formData = await request.formData();
@@ -38,11 +46,10 @@ export async function POST(request: Request) {
   }
 
   const filename = `${Date.now()}-${crypto.randomBytes(4).toString("hex")}${ext}`;
-  const uploadDir = path.join(process.cwd(), "public", "uploads");
-  fs.mkdirSync(uploadDir, { recursive: true });
+  fs.mkdirSync(UPLOADS_DIR, { recursive: true });
 
   const buffer = Buffer.from(await file.arrayBuffer());
-  fs.writeFileSync(path.join(uploadDir, filename), buffer);
+  fs.writeFileSync(path.join(UPLOADS_DIR, filename), buffer);
 
   return NextResponse.json({ path: `/uploads/${filename}` });
 }
